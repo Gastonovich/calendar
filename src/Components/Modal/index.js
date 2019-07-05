@@ -27,14 +27,24 @@ const ModalPanel = styled.div`
 const Controls = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: space-around;
 `;
+
+const Input = styled.input`
+  background: #fff;
+  color: #a3a3a3;
+  font: inherit;
+  box-shadow: 5px 6px 10px 3px rgba(0, 0, 0 , .1);
+  border: 0;
+  outline: 0;
+  padding: 22px 18px;
+  margin: 10px;
+`
 
 function Modal({ changeModalState, dayObj, addEvent, changeEvent }) {
   const [inputValue, setInputValue] = useState(
     dayObj.event !== undefined ? dayObj.event : ""
   );
-
   const handleChange = e => {
     setInputValue(e.target.value);
   };
@@ -60,7 +70,7 @@ function Modal({ changeModalState, dayObj, addEvent, changeEvent }) {
         <h1>
           It's a {dayObj.id}th of {dayObj.month}
         </h1>
-        <input value={inputValue} onChange={handleChange} />
+        <Input value={inputValue} placeholder={'Write here smth'} onChange={handleChange} />
         <Controls>
           <button onClick={confirm}>
             {dayObj.event === undefined ? "Add" : "Change"}

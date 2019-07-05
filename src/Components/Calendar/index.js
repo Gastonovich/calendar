@@ -3,6 +3,7 @@ import moment from "moment";
 import Modal from "../Modal";
 import styled from "styled-components";
 import createPersistedState from "use-persisted-state";
+const uuidv1 = require("uuid/v1");
 
 const useCounterState = createPersistedState("events");
 
@@ -16,13 +17,14 @@ const Calendar = styled.div`
   background-color: #fff;
   box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2),
     0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 2px 1px -1px rgba(0, 0, 0, 0.12);
+
   button {
-    margin: 0.4em;
+    margin: 0.7em;
     box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.2),
       0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 3px 1px -2px rgba(0, 0, 0, 0.12);
     display: inline-block;
     border: none;
-    padding: 0.4rem 0.8rem;
+    padding: 0.7rem 1.5rem;
     text-decoration: none;
     background-color: #e0e0e0;
     color: #000;
@@ -36,7 +38,7 @@ const Calendar = styled.div`
   }
 
   button:hover {
-    background-color: #d5d5d5;
+    background-color: #b1b1b1;
   }
 `;
 const Header = styled.div`
@@ -68,6 +70,10 @@ const Day = styled.div`
     cursor: pointer;
   }
 `;
+const Delay = styled.div`
+  text-align: center;
+  padding: 1em;
+`;
 
 function App() {
   const [date, setDate] = useState(moment().toISOString());
@@ -75,46 +81,55 @@ function App() {
   const [events, setEvents] = useCounterState([]);
   const [currentDayObj, setCurrentDayObj] = useState(null);
 
-  if (localStorage.getItem("Event") !== null) {
-    console.log(localStorage.getItem("Event"));
-  }
-
   const renderCalendar = () => {
     let arr = [];
-    for (let k = 1; k <= moment(date).daysInMonth(); k++) {
-      let obj = findEvent(k, moment(date).month(), moment(date).year());
-      if (obj) {
-        arr.push({
-          id: k - 1,
-          number: k,
-          event: obj.event
-        });
-      } else {
-        arr.push({
-          id: k - 1,
-          number: k
-        });
-      }
+    let startOfMonth =
+      +moment(date)
+        .startOf("month")
+        .format("d") - 1;
+    if (startOfMonth < 0) {
+      startOfMonth = 6;
     }
-    arr = (
-      <>
-        {arr.map(el => (
+    console.log();
+
+    for (let k = 0; k < startOfMonth; k++) {
+      arr.push(<Delay key={uuidv1()} />);
+    }
+    for (let k = 1; k <= moment(date).daysInMonth(); k++) {
+      let el = findEvent(k, moment(date).month(), moment(date).year());
+      if (el) {
+        arr.push(
           <Day
             onClick={() =>
               openModal({
-                id: el.number,
+                id: k,
                 event: el.event,
                 month: moment(date).format("MMMM")
               })
             }
-            key={el.id}
+            key={k - 1}
             className={el.event && "withEvent"}
           >
-            {el.number}
+            {k}
           </Day>
-        ))}
-      </>
-    );
+        );
+      } else {
+        arr.push(
+          <Day
+            onClick={() =>
+              openModal({
+                id: k,
+                month: moment(date).format("MMMM")
+              })
+            }
+            key={k - 1}
+          >
+            {k}
+          </Day>
+        );
+      }
+    }
+
     return arr;
   };
 
