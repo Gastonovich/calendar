@@ -59,7 +59,7 @@ const Content = styled.div`
   .withEvent {
     background-color: rgb(207, 210, 239);
   }
-  width: 70%;
+  width: 80%;
   padding: 0.5em;
 `;
 const Day = styled.div`

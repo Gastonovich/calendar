@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 
 const Background = styled.div`
@@ -60,8 +60,6 @@ function Modal({ changeModalState, dayObj, addEvent, changeEvent }) {
       changeModalState(false);
     }
   };
-
-  useEffect(() => {}, [inputValue]);
 
   return (
     <>
