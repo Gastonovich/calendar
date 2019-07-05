@@ -96,29 +96,28 @@ function App() {
     if (startOfMonth < 0) {
       startOfMonth = 6;
     }
-    daysOfWeek.forEach((el)=>arr.push(<DayOfWeek>{el}</DayOfWeek>))
-    console.log();
+    daysOfWeek.forEach((el) => arr.push(<DayOfWeek>{el}</DayOfWeek>))
     //rendering delays
     for (let k = 0; k < startOfMonth; k++) {
       arr.push(<Delay key={uuidv1()} />);
     }
     //rendering days of month
-    for (let k = 1; k <= moment(date).daysInMonth(); k++) {
-      let el = findEvent(k, moment(date).month(), moment(date).year());
+    for (let index = 1; index <= moment(date).daysInMonth(); index++) {
+      let el = findEvent(index, moment(date).month(), moment(date).year());
       if (el) {
         arr.push(
           <Day
             onClick={() =>
               openModal({
-                id: k,
+                id: index,
                 event: el.event,
                 month: moment(date).format("MMMM")
               })
             }
-            key={k - 1}
+            key={index - 1}
             className={el.event && "withEvent"}
           >
-            {k}
+            {index}
           </Day>
         );
       } else {
@@ -126,13 +125,13 @@ function App() {
           <Day
             onClick={() =>
               openModal({
-                id: k,
+                id: index,
                 month: moment(date).format("MMMM")
               })
             }
-            key={k - 1}
+            key={index - 1}
           >
-            {k}
+            {index}
           </Day>
         );
       }
@@ -186,7 +185,7 @@ function App() {
   };
 
   useEffect(() => {
-    renderCalendar();
+  
   }, [date]);
 
   return (
