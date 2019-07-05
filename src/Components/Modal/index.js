@@ -14,14 +14,20 @@ const ModalPanel = styled.div`
   padding: 5%;
   position: absolute;
   background: #fff;
-  width: 40%;
+  width: 20%;
   top: 30%;
-  left: 25%;
+  left: 35%;
   box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2),
     0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 2px 1px -1px rgba(0, 0, 0, 0.12);
   display: flex;
   flex-direction: column;
   text-align: center;
+`;
+
+const Controls = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 `;
 
 function Modal({ changeModalState, dayObj, addEvent, changeEvent }) {
@@ -51,12 +57,16 @@ function Modal({ changeModalState, dayObj, addEvent, changeEvent }) {
     <>
       <Background onClick={() => changeModalState(false)} />
       <ModalPanel>
-        <h1>{dayObj.id}</h1>
+        <h1>
+          It's a {dayObj.id}th of {dayObj.month}
+        </h1>
         <input value={inputValue} onChange={handleChange} />
-        <button onClick={confirm}>
-          {dayObj.event === undefined ? "Add" : "Change"}
-        </button>
-        <button onClick={() => changeModalState(false)}>Close</button>
+        <Controls>
+          <button onClick={confirm}>
+            {dayObj.event === undefined ? "Add" : "Change"}
+          </button>
+          <button onClick={() => changeModalState(false)}>Close</button>
+        </Controls>
       </ModalPanel>
     </>
   );

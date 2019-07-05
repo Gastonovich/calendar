@@ -2,8 +2,16 @@ import React, { useState, useEffect } from "react";
 import moment from "moment";
 import Modal from "../Modal";
 import styled from "styled-components";
+import createPersistedState from "use-persisted-state";
+
+const useCounterState = createPersistedState("events");
 
 const Calendar = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 550px;
   text-align: center;
   background-color: #fff;
   box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2),
@@ -36,6 +44,7 @@ const Header = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: space-around;
+  width: 100%;
 `;
 
 const Content = styled.div`
@@ -44,14 +53,16 @@ const Content = styled.div`
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
+  grid-gap: 0.1em;
   .withEvent {
     background-color: rgb(207, 210, 239);
   }
+  width: 70%;
+  padding: 0.5em;
 `;
 const Day = styled.div`
   text-align: center;
   padding: 1em;
-  margin: 0.1 em;
   :hover {
     background-color: rgba(0, 0, 0, 0.08);
     cursor: pointer;
@@ -61,8 +72,12 @@ const Day = styled.div`
 function App() {
   const [date, setDate] = useState(moment().toISOString());
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const [events, setEvents] = useState([]);
+  const [events, setEvents] = useCounterState([]);
   const [currentDayObj, setCurrentDayObj] = useState(null);
+
+  if (localStorage.getItem("Event") !== null) {
+    console.log(localStorage.getItem("Event"));
+  }
 
   const renderCalendar = () => {
     let arr = [];
@@ -85,7 +100,13 @@ function App() {
       <>
         {arr.map(el => (
           <Day
-            onClick={() => openModal({ id: el.number, event: el.event })}
+            onClick={() =>
+              openModal({
+                id: el.number,
+                event: el.event,
+                month: moment(date).format("MMMM")
+              })
+            }
             key={el.id}
             className={el.event && "withEvent"}
           >
@@ -120,7 +141,6 @@ function App() {
   }
 
   const addEvent = obj => {
-    console.log(events);
     let { id, event } = obj;
     const newEvent = {
       day: id,
@@ -132,13 +152,14 @@ function App() {
   };
 
   const changeEvent = obj => {
-    let foundindex = events.findIndex(
+    let foundIndex = events.findIndex(
       el =>
         el.day === obj.id &&
         el.month === moment(date).month() &&
         el.year === moment(date).year()
     );
-    events[foundindex].event = obj.event;
+    events[foundIndex].event = obj.event;
+    setEvents([...events]);
   };
 
   useEffect(() => {
@@ -147,7 +168,7 @@ function App() {
 
   return (
     <Calendar>
-      <h1>Today is {moment(date).format("L")}</h1>
+      <h1>{moment(date).format("MMMM") + " " + moment(date).format("YYYY")}</h1>
       <Header>
         <button onClick={() => changeCurrentDate(-1)}>Prev</button>
         <button onClick={() => setDate(moment().toISOString())}>Today</button>
