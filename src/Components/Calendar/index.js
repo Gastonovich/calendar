@@ -75,11 +75,17 @@ const Delay = styled.div`
   padding: 1em;
 `;
 
+const DayOfWeek = styled.div`
+  text-align: center;
+  padding: 0.2em 1em;
+`
+
 function App() {
   const [date, setDate] = useState(moment().toISOString());
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [events, setEvents] = useCounterState([]);
   const [currentDayObj, setCurrentDayObj] = useState(null);
+  const daysOfWeek = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 
   const renderCalendar = () => {
     let arr = [];
@@ -90,11 +96,13 @@ function App() {
     if (startOfMonth < 0) {
       startOfMonth = 6;
     }
+    daysOfWeek.forEach((el)=>arr.push(<DayOfWeek>{el}</DayOfWeek>))
     console.log();
-
+    //rendering delays
     for (let k = 0; k < startOfMonth; k++) {
       arr.push(<Delay key={uuidv1()} />);
     }
+    //rendering days of month
     for (let k = 1; k <= moment(date).daysInMonth(); k++) {
       let el = findEvent(k, moment(date).month(), moment(date).year());
       if (el) {
