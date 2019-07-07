@@ -1,91 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import moment from "moment";
 import Modal from "../Modal";
-import styled from "styled-components";
 import createPersistedState from "use-persisted-state";
-const uuidv1 = require("uuid/v1");
+import { namesOfDaysOnWeek, Header, Content, Day, DayOfWeek, Delay, Calendar } from '../../Utils';
+import { v4 as uuid } from 'uuid';
 
 const useCounterState = createPersistedState("events");
-
-const Calendar = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 550px;
-  text-align: center;
-  background-color: #fff;
-  box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2),
-    0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 2px 1px -1px rgba(0, 0, 0, 0.12);
-
-  button {
-    margin: 0.7em;
-    box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.2),
-      0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 3px 1px -2px rgba(0, 0, 0, 0.12);
-    display: inline-block;
-    border: none;
-    padding: 0.7rem 1.5rem;
-    text-decoration: none;
-    background-color: #e0e0e0;
-    color: #000;
-    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-    font-size: 1rem;
-    cursor: pointer;
-    text-align: center;
-    transition: background 250ms ease-in-out, transform 150ms ease;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-  }
-
-  button:hover {
-    background-color: #b1b1b1;
-  }
-`;
-const Header = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-around;
-  width: 100%;
-`;
-
-const Content = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  grid-gap: 0.1em;
-  .withEvent {
-    background-color: rgb(207, 210, 239);
-  }
-  width: 80%;
-  padding: 0.5em;
-`;
-const Day = styled.div`
-  text-align: center;
-  padding: 1em;
-  :hover {
-    background-color: rgba(0, 0, 0, 0.08);
-    cursor: pointer;
-  }
-`;
-const Delay = styled.div`
-  text-align: center;
-  padding: 1em;
-`;
-
-const DayOfWeek = styled.div`
-  text-align: center;
-  padding: 0.2em 1em;
-`
 
 function App() {
   const [date, setDate] = useState(moment().toISOString());
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [events, setEvents] = useCounterState([]);
   const [currentDayObj, setCurrentDayObj] = useState(null);
-  const daysOfWeek = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 
   const renderCalendar = () => {
     let arr = [];
@@ -96,49 +22,49 @@ function App() {
     if (startOfMonth < 0) {
       startOfMonth = 6;
     }
-    daysOfWeek.forEach((el) => arr.push(<DayOfWeek>{el}</DayOfWeek>))
+
+    namesOfDaysOnWeek.forEach((el) => arr.push(<DayOfWeek key={uuid()}>{el}</DayOfWeek>))
     //rendering delays
     for (let k = 0; k < startOfMonth; k++) {
-      arr.push(<Delay key={uuidv1()} />);
+      arr.push(<Delay key={uuid()} />);
     }
     //rendering days of month
     for (let index = 1; index <= moment(date).daysInMonth(); index++) {
       let el = findEvent(index, moment(date).month(), moment(date).year());
-      if (el) {
-        arr.push(
-          <Day
-            onClick={() =>
-              openModal({
-                id: index,
-                event: el.event,
-                month: moment(date).format("MMMM")
-              })
-            }
-            key={index - 1}
-            className={el.event && "withEvent"}
-          >
-            {index}
-          </Day>
-        );
-      } else {
-        arr.push(
-          <Day
-            onClick={() =>
-              openModal({
-                id: index,
-                month: moment(date).format("MMMM")
-              })
-            }
-            key={index - 1}
-          >
-            {index}
-          </Day>
-        );
-      }
+      arr.push(getDayElement(index, el))
     }
-
     return arr;
   };
+
+  const getDayElement = (index, el) => {
+    if (el) {
+      return (<Day
+        onClick={() =>
+          openModal({
+            id: index,
+            event: el.event,
+            month: moment(date).format("MMMM")
+          })
+        }
+        key={index - 1}
+        className={el.event && "withEvent"}
+      >
+        {index}
+      </Day>)
+    } else {
+      return (<Day
+        onClick={() =>
+          openModal({
+            id: index,
+            month: moment(date).format("MMMM")
+          })
+        }
+        key={index - 1}
+      >
+        {index}
+      </Day>)
+    }
+  }
 
   const findEvent = (day, month, year) => {
     return events.find(
@@ -183,10 +109,6 @@ function App() {
     events[foundIndex].event = obj.event;
     setEvents([...events]);
   };
-
-  useEffect(() => {
-  
-  }, [date]);
 
   return (
     <Calendar>
